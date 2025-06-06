@@ -1,12 +1,19 @@
 // # Express setup
 
-// app.js
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  
-  if (err instanceof multer.MulterError) {
-    return res.status(400).json({ error: 'File upload error' });
-  }
-  
-  res.status(500).json({ error: 'Internal server error' });
-});
+import express from "express"
+import cors from "cors"
+import cookieParser from "cookie-parser"
+
+const app = express()
+
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}))
+
+app.use(express.json({limit: "16kb"}))
+app.use(express.urlencoded({extended: true, limit: "16kb"}))
+app.use(express.static("public"))
+app.use(cookieParser())
+
+export { app }

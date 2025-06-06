@@ -1,21 +1,30 @@
 // # Redis caching
+import cacheManager from "../utils/cache.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
-const redis = require('../config/redis');
-
-const cache = (duration) => {
+const cacheMiddleware = (ttl = 3600) => {
   return async (req, res, next) => {
-    const key = '__express__' + req.originalUrl;
-    const cachedData = await redis.get(key);
+    if (req.method !== "GET") return next();
+    
+    const key = cacheManager.generateKey(req);
+    const cachedData = await cacheManager.get(key);
 
     if (cachedData) {
-      return res.json(JSON.parse(cachedData));
-    } else {
-      res.sendResponse = res.json;
-      res.json = (body) => {
-        redis.setex(key, duration, JSON.stringify(body));
-        res.sendResponse(body);
-      };
-      next();
+      return res
+        .status(200)
+        .json(new ApiResponse(200, { ...cachedData, cached: true }, "Data served from cache"));
     }
+
+    // Override res.json to cache response before sending
+    const originalJson = res.json;
+    res.json = (body) => {
+      cacheManager.set(key, body, ttl);
+      return originalJson.call(res, body);
+    };
+
+    next();
   };
 };
+
+export default cacheMiddleware;
+
