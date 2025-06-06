@@ -1,5 +1,6 @@
 //  # Business logic
-import { Chapter } from "../models/chapter.model.js";
+// import { Chapter } from "../models/chapter.model.js";
+import Chapter from "../models/chapter.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import cacheManager from "../utils/cache.js";

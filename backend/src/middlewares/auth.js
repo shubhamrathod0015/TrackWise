@@ -3,7 +3,7 @@
 
 import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError.js";
-import { User } from "../models/user.model.js";
+import  User  from "../models/user.model.js";
 
 const verifyJWT = async (req, res, next) => {
   try {
